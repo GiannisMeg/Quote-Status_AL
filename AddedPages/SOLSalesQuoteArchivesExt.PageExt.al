@@ -1,5 +1,6 @@
 pageextension 50112 "SOL Sales Quote Archives Ext" extends "Sales Quote Archives"
 {
+
     layout
     {
         addafter("Due Date")

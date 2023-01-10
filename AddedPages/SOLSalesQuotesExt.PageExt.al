@@ -17,12 +17,12 @@ pageextension 50111 "SOL Sales Quotes Ext" extends "Sales Quotes"
             field("Won/Lost Reason Code"; Rec."SOL Won/Lost Reason Code")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specified the reason closing the quote.';
+                ToolTip = 'Specified the reason Code.';
             }
             field("Won/Lost Reason Desc."; Rec."SOL Won/Lost Reason Desc.")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies the reason closing the quote.';
+                ToolTip = 'Specifies the reason Description.';
             }
             field("Won/Lost Remarks"; Rec."SOL Won/Lost Remarks")
             {
