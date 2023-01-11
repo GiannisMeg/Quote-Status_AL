@@ -36,6 +36,19 @@ pageextension 50110 "SOL Sales Quote Ext" extends "Sales Quote"
             }
 
         }
+
         // Add changes to page layout here
+    }
+
+    actions
+    {
+        area(Process)
+        {
+            group(Create)
+            {
+                
+             Run."SOL Quote Status Mgmt"  
+            }
+        }
     }
 }
