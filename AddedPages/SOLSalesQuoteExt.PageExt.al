@@ -42,12 +42,27 @@ pageextension 50110 "SOL Sales Quote Ext" extends "Sales Quote"
 
     actions
     {
-        area(Process)
+        addfirst(Create)
         {
-            group(Create)
+            action(CloseQuote)
             {
-                
-             Run."SOL Quote Status Mgmt"  
+
+                ApplicationArea = All;
+                Caption = '&Close Quote';
+                Image = Close;
+                Promoted = true;// show in the process menu
+                PromotedCategory = Process; // show in the process menu
+                PromotedIsBig = true;
+                ToolTip = 'Closes the sales quote and archives';
+
+                trigger OnAction()
+                var
+                    QuoteStatusMgmt: Codeunit "SOL Quote Status Mgmt";
+
+                begin
+                    if Page.RunModal(Page::"SOL Close Quote", Rec) = Action::LookupOK then
+                        QuoteStatusMgmt.CloseQuote(Rec);
+                end;
             }
         }
     }
