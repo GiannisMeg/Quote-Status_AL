@@ -23,7 +23,7 @@ page 50120 "SOL Close Quote"
             group(General)
             {
                 Caption = 'General';
-                field(QuoteQWon; Rec."SOL Won/Lost Quote Status")
+                field(QuoteWon; Rec."SOL Won/Lost Quote Status")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the status of the quote.';

@@ -25,12 +25,13 @@ tableextension 50110 "SOL Sales Header Ext" extends "Sales Header"
 
 
         }
+        // the Code[10] matches the data type of our tablerelation that is also code[10]
         field(50112; "SOL Won/Lost Reason Code"; Code[10])
         {
             Caption = 'Won/Lost Reason Code';
             // link to Close Opportunity Code table
             //When Status is Won show values filtered type=Won
-            TableRelation = if ("SOL Won/Lost Quote Status" = const(Won)) "Close Opportunity Code" where(type = Const(Won))
+            TableRelation = if ("SOL Won/Lost Quote Status" = const(Won)) "Close Opportunity Code" where(type = Const(Won))//type is a boolean field in the Close Opportunity Code
             else
             // show values filtered type=Lost
             if ("SOL Won/Lost Quote Status" = const(Lost)) "Close Opportunity Code" where(type = const(Lost));
@@ -40,6 +41,7 @@ tableextension 50110 "SOL Sales Header Ext" extends "Sales Header"
                 CalcFields("SOL Won/Lost Reason Desc.");
             end;
         }
+        // our type in this field has to match the type of our lookup table in this case is Close Opportunity Code.
         field(50113; "SOL Won/Lost Reason Desc."; Text[100])
         {
             Caption = 'Won/Lost Reason Description';

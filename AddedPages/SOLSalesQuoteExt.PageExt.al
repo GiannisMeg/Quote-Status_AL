@@ -62,6 +62,8 @@ pageextension 50110 "SOL Sales Quote Ext" extends "Sales Quote"
                 begin
                     if Page.RunModal(Page::"SOL Close Quote", Rec) = Action::LookupOK then
                         QuoteStatusMgmt.CloseQuote(Rec);
+
+                    // synstax : [Action := ]  Page.RunModal()
                 end;
             }
         }
