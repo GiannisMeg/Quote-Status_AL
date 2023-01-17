@@ -33,6 +33,71 @@ codeunit 50130 "SOL Quote Status Mgmt"
                 ArchiveManagement.ArchiveSalesDocument(SalesHeader);
         end;
     end;
+    // ## Request quote status on order creation or archiving
+
+
+    // We use OnBeforeActionEvent cause we need the subevent to run before the OnAction() trigger int he Sales Quote page
+    [EventSubscriber(ObjectType::Page, Page::"Sales Quote", 'OnBeforeActionEvent', 'Archive Document', true, true)]
+    local procedure OnBeforeActionArchiveDocumentQuote(var Rec: Record "Sales Header")
+
+    var
+        ArchiveCanNotBeCompletedErr: Label 'Document archive can not be completed.';
+
+    begin
+        CheckingQuoteStatusWonLos(Rec, ArchiveCanNotBeCompletedErr);
+    end;
+
+
+
+    [EventSubscriber(ObjectType::Page, Page::"Sales Quote", 'OnBeforeActionEvent', 'MakeOrder', true, true)]
+    local procedure OnBeforeMakeOrderQuote(var Rec: Record "Sales Header")
+
+    var
+        OrderCreationCanNotBeCompletedErr: Label 'Order creation can not be completed.';
+
+    begin
+        CheckingQuoteStatusWonLos(Rec, OrderCreationCanNotBeCompletedErr);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Sales Quotes", 'OnBeforeActionEvent', 'MakeOrder', true, true)]
+    local procedure OnBeforeActionMakeOrderQuote(var Rec: Record "Sales Header")
+
+    var
+        OrderCreationCanNotBeCompletedErr: Label 'Order creation can not be completed.';
+
+    begin
+        CheckingQuoteStatusWonLos(Rec, OrderCreationCanNotBeCompletedErr)
+    end;
+
+    local procedure CheckingQuoteStatusWonLos(var SaelsHeader: Record "Sales Header"; NotCompleteErr: Text)
+    begin
+        if SaelsHeader."SOL Won/Lost Quote Status" <> "SOL Won/Lost Status"::"In Progress" then
+            exit;
+
+        if Page.RunModal(Page::"SOL Close Quote", SaelsHeader) <> Action::LookupOK then
+            Error(NotCompleteErr);
+
+    end;
+
+    // ## Copy quote status from sale quote to sales quote archive
+
+
+    // use the OnBeforeSalesHeaderArchiveInsert where only need to copy the values from the talve to the other
+    // we dont need to specify a Modify or Insert statement because it get handled in the standard ArchiveManagement codeunit.
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"ArchiveManagement", 'OnBeforeSalesHeaderArchiveInsert', '', true, true)]
+    local procedure OnBeforeSalesHeaderArchiveInsert(var SalesHeaderArchive: Record "Sales Header Archive"; SalesHeader: Record "Sales Header")
+    begin
+
+        // checking existance 
+        if (SalesHeader."Document Type" <> SalesHeader."Document Type"::Quote) then
+            exit;
+        // if not copy from the header to Archive
+        SalesHeaderArchive."SOL Quote Status" := SalesHeader."SOL Won/Lost Quote Status";
+        SalesHeaderArchive."SOL Won/Lost Date" := SalesHeader."SOL Won/Lost Date";
+        SalesHeaderArchive."SOL Won/Lost Reason Code" := SalesHeader."SOL Won/Lost Reason Code";
+        SalesHeaderArchive."SOL Won/Lost Reason Desc." := SalesHeader."SOL Won/Lost Reason Desc.";
+        SalesHeaderArchive."SOL Won/Lost Remarks" := SalesHeader."SOL Won/Lost Remarks";
+    end;
 }
 
 
