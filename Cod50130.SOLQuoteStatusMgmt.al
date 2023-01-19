@@ -77,7 +77,7 @@ codeunit 50130 "SOL Quote Status Mgmt"
         // checking if is not in progress so its either won or lost
         if Salesheader."SOL Won/Lost Quote Status" <> "SOL Won/Lost Status"::"In Progress" then
             exit;
-        // we lookup if the status is in progress and only in this case we showing the Close Quote
+        // if the status is in progress and only in this case we showing the Close Quote
         // for the won/lost showing Sales Quote (reverse logic)
         if Page.RunModal(Page::"SOL Close Quote", Salesheader) <> Action::LookupOK then
             Error(NotCompleteErr);
