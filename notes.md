@@ -11,8 +11,4 @@ we have 4 diff Contols
 
     ///
 
-    
-// signaleringen
-// search op RL doo2
-// double click  en dan koppelingen indrukken en dan open de document opent me de probleem
-// debuggen can niet tegelijk met iemand adners laten runenn
+

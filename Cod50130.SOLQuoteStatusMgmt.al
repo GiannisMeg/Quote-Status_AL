@@ -127,6 +127,55 @@ codeunit 50130 "SOL Quote Status Mgmt"
         if Salesperson.FindFirst() then
             exit(Salesperson.Code);
     end;
+
+    // when a logged in person from sales opensRoleCenter page show won/lost quotes for the last 5 days if they are no quotes found dont show notifications
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Conf./Personalization Mgt.", 'OnRoleCenterOpen', '', true, true)]
+    // trigger event onRoleCenterOpen
+    local procedure OnRoleCenterOpen()
+    var
+        SalespersonCode: Code[20];
+
+    begin
+        SalespersonCode := GetSalespersonForLoggedInUser();
+
+        // check if the salespersonCode is logged in if not exit
+        if SalespersonCode = '' then
+            exit;
+        // show won status
+        GetQuoteRecords("SOL Won/Lost Status"::Won, SalespersonCode);
+        // show lost status
+        GetQuoteRecords("SOL Won/Lost Status"::Lost, SalespersonCode);
+    end;
+
+    Local procedure GetQuoteRecords(WonLostStatus: Enum "SOL Won/Lost Status"; SalespersonCode: Code[20])
+    var
+        SalesHeader: Record "Sales Header";
+        NoOfRecords: Integer;
+    begin
+        SalesHeader.Reset();
+        SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Quote);
+        SalesHeader.SetRange("SOL Won/Lost Quote Status", WonLostStatus);
+        // SalesHeader.SetRange("SOL Won/Lost Date", AddDateToTime(CurrentDateTime(),-5),CurrentDateTime());
+        SalesHeader.SetRange("SOL Won/Lost Date", CurrentDateTime());
+        NoOfRecords := SalesHeader.Count();
+
+        If NoOfRecords <> 0 then
+            SendNoOfQuoteNotification(NoOfRecords, WonLostStatus, SalespersonCode);
+
+    end;
+
+    local procedure SendNoOfQuoteNotification(NoOfQuotes: Integer; WonLostStatus: Enum "SOL Won/Lost Status"; SalespersonCode: Code[20])
+    var
+        QuoteNotification: Notification;
+        YouWonLostQuoteMsg: Label 'You %1 Quotes''%2''quotes during the last 5 days.', Comment = '%1 = Won/Lost ; %2 = No of quotes';
+        ShowQutoesLbl: Label 'Show %1 Quotes', Comment = '%1 = Qon/Lost';
+    begin
+        QuoteNotification.Message := StrSubstNo(YouWonLostQuoteMsg, WonLostStatus, NoOfQuotes);
+        QuoteNotification.SetData('SalespersonCode', SalespersonCode);
+        QuoteNotification.SetData('WonLostStatus', Format(WonLostStatus.AsInteger()));
+        QuoteNotification.AddAction(StrSubstNo(ShowQutoesLbl, WonLostStatus), Codeunit::"SOL Quote Status Mgmt", 'OpenQuotes');
+        QuoteNotification.Send();
+    end;
 }
 
 
