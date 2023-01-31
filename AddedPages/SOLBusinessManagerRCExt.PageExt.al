@@ -1,6 +1,6 @@
 
 // add twp parts to Role Cemter before the Favorite Accoutns
-pageextension 50100 "SOL Business Manager rc Ext" extends "Business Manager Role Center"
+pageextension 50100 "SOL Business Manager RC Ext" extends "Business Manager Role Center"
 {
     layout
     {
@@ -12,6 +12,7 @@ pageextension 50100 "SOL Business Manager rc Ext" extends "Business Manager Role
             {
                 Caption = 'You Won Sales Quotes';
                 ApplicationArea = All;
+                // The Subpageview filters the list part values won / lost
                 SubPageView = where("SOL Won/Lost Quote Status" = const("Won"));
             }
             // LOST QUOTES SITUATION
@@ -23,5 +24,4 @@ pageextension 50100 "SOL Business Manager rc Ext" extends "Business Manager Role
             }
         }
     }
-
 }

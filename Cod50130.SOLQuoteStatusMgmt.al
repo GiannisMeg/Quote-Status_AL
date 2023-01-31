@@ -106,6 +106,28 @@ codeunit 50130 "SOL Quote Status Mgmt"
         SalesHeaderArchive."SOL Won/Lost Reason Desc." := SalesHeader."SOL Won/Lost Reason Desc.";
         SalesHeaderArchive."SOL Won/Lost Remarks" := SalesHeader."SOL Won/Lost Remarks";
     end;
+
+    //Create a function who retrieves the salesperson for the currently logged in user
+    procedure GetSalespersonForLoggedInUser(): Code[20]
+    var
+        // store local variables the recored we want to retrieve from the table 
+        Salesperson: Record "Salesperson/Purchaser";
+        User: Record User;
+    begin
+        User.Reset();
+        if not User.Get(UserSecurityId()) then
+            exit('');
+
+        if User."Contact Email".Trim() = '' then
+            exit('');
+
+        Salesperson.Reset();
+        Salesperson.SetRange("E-Mail", User."Contact Email");
+        //chech salesperson exist then finddirst() and get the salespersonCode
+        if Salesperson.FindFirst() then
+            exit(Salesperson.Code);
+    end;
 }
+
 
 

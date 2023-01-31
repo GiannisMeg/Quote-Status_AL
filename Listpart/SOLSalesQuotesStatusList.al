@@ -4,12 +4,14 @@ page 50101 "SOL Sales Quote Status List"
     Caption = 'WonLostQuotePart';
     PageType = ListPart;
     SourceTable = "Sales Header";
+    Editable = false;
     //dipslay omly quotes
     SourceTableView = where("Document Type" = const(Quote));
     // filter the document only show quotes and not be able to add edir or delete recoreds.
     InsertAllowed = false;
     DeleteAllowed = false;
     ModifyAllowed = false;
+
 
 
     layout
@@ -26,6 +28,7 @@ page 50101 "SOL Sales Quote Status List"
                     begin
                         Page.Run(Page::"Sales Quote", Rec);
                     end;
+
                 }
                 field("Sell-to Customer Name"; Rec."Sell-to Customer Name")
                 {
@@ -47,5 +50,31 @@ page 50101 "SOL Sales Quote Status List"
         }
 
     }
+    trigger OnOpenPage()
+    begin
+        GetQuoteForCurrentUser();
+    end;
+
+
+    local procedure GetQuoteForCurrentUser()
+    var
+        QuoteStatusMgmt: Codeunit "SOL Quote Status Mgmt";
+        SalespersonCode: Code[20];
+        SalesHdr: Record "Sales Header";
+
+    begin
+        SalespersonCode := QuoteStatusMgmt.GetSalespersonForLoggedInUser();
+        SalesHdr.FilterGroup(2);
+        SalesHdr.SetRange("Salesperson Code", SalespersonCode);
+        SalesHdr.FilterGroup(0);
+    end;
+
+
+
+
+
+
+
+
 
 }
